@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Realtime STT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html,body{font-family:Segoe UI,system-ui,Arial;margin:0;background:#0b1220;color:#e8eefc}
+    .wrap{max-width:900px;margin:24px auto;padding:16px}
+    .hud{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+    .led{width:10px;height:10px;border-radius:999px;background:#a33}
+    .led.on{background:#3a3}
+    .pill{border:1px solid #22304a;border-radius:999px;padding:4px 10px}
+    .box{background:#0f1a30;border:1px solid #22304a;border-radius:12px;padding:16px}
+    #interim{opacity:.6}
+    p{margin:.4rem 0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hud">
+      <div class="led" id="led"></div>
+      <div class="pill" id="status">Idle</div>
+      <div class="pill" id="latency">–</div>
+    </div>
+    <div class="box">
+      <div id="final"></div>
+      <div id="interim"></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
