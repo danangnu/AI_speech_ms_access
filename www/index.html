@@ -1,33 +1,35 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Realtime STT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    html,body{font-family:Segoe UI,system-ui,Arial;margin:0;background:#0b1220;color:#e8eefc}
-    .wrap{max-width:900px;margin:24px auto;padding:16px}
-    .hud{display:flex;gap:12px;align-items:center;margin-bottom:16px}
-    .led{width:10px;height:10px;border-radius:999px;background:#a33}
-    .led.on{background:#3a3}
-    .pill{border:1px solid #22304a;border-radius:999px;padding:4px 10px}
-    .box{background:#0f1a30;border:1px solid #22304a;border-radius:12px;padding:16px}
-    #interim{opacity:.6}
-    p{margin:.4rem 0}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="hud">
-      <div class="led" id="led"></div>
-      <div class="pill" id="status">Idle</div>
-      <div class="pill" id="latency">–</div>
-    </div>
-    <div class="box">
-      <div id="final"></div>
-      <div id="interim"></div>
-    </div>
+<!doctype html><html><head>
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src wss: https: http://127.0.0.1:51337; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Realtime STT</title>
+<style>
+ body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#0b1020;color:#e8ebff}
+ .wrap{max-width:1000px;margin:0 auto;padding:16px}
+ .hud{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+ .badge{padding:4px 8px;border-radius:999px;background:#1b2340;border:1px solid #2b3560;font-size:12px}
+ .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;background:#666}
+ .status-dot.ok{background:#2ecc71}.status-dot.warn{background:#f1c40f}.status-dot.err{background:#e74c3c}
+ .caps{background:#0f1530;border:1px solid #233;border-radius:8px;padding:12px;min-height:220px}
+ .partial{opacity:.7}.final{margin-top:6px;white-space:pre-wrap}
+ .log{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:#060913;color:#a8b0d0;border:1px solid #233;border-radius:8px;padding:8px;margin-top:12px;max-height:180px;overflow:auto}
+ button{background:#2b6ef0;color:#fff;border:0;padding:8px 14px;border-radius:8px;cursor:pointer}
+ button:disabled{opacity:.5;cursor:not-allowed}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="hud">
+    <span class="badge"><span id="dot" class="status-dot"></span><span id="status">idle</span></span>
+    <span class="badge" id="latency">— ms</span>
+    <span class="badge" id="model">model: medical</span>
+    <button id="btnStart">Start</button>
+    <button id="btnStop" disabled>Stop</button>
   </div>
-  <script src="app.js"></script>
-</body>
-</html>
+  <div class="caps" id="caps">
+    <div class="partial" id="partial"></div>
+    <div class="final" id="final"></div>
+  </div>
+  <div class="log" id="log"></div>
+</div>
+<script src="./app.js"></script>
+</body></html>

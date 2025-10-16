@@ -1,0 +1,238 @@
+# ------------ OS / Editors ------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS (in case teammates)
+.DS_Store
+.AppleDouble
+.Spotlight-V100
+.Trashes
+
+# Editors/IDEs
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ------------ Secrets & Env ------------
+.env
+.env.*.local
+*.env.local
+*.secret
+secrets.json
+# Keep examples
+!.env.example
+
+# ------------ Logs & Dumps ------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pip-log.txt
+*.pid
+*.seed
+*.pid.lock
+*.dmp
+*.stackdump
+
+# ------------ Node / React / Vite / Next ------------
+node_modules/
+dist/
+build/
+.next/
+.out/
+.cache/
+.npm/
+.pnp/
+.pnp.js
+.eslintcache
+.stylelintcache
+storybook-static/
+coverage/
+.nyc_output/
+
+# Vite/CRA artifacts
+vite.svg
+*.tsbuildinfo
+
+# ------------ Python / FastAPI ------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+site/
+htmlcov/
+.coverage
+.coverage.*
+dist/
+build/
+.eggs/
+*.egg-info/
+*.egg
+.ipynb_checkpoints/
+.python-version
+
+# ------------ .NET / C# ------------
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Tt]est[Rr]esult*/
+*.cache/
+*.obj
+*.pdb
+*.user
+*.suo
+*.svclog
+*.dbmdl
+*.jfm
+_ReSharper*/
+*.DotSettings.user
+*.opendb
+Generated\ Files/
+*.nupkg
+packages/
+project.lock.json
+artifacts/
+# Rider/Resharper caches already covered by .idea/_ReSharper*
+
+# ------------ Flutter / Dart ------------
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+.pub-cache/
+build/
+# Android (Flutter or native)
+.android/
+gradle-app.setting
+*.apk
+*.aab
+android/.gradle/
+android/.cxx/
+android/local.properties
+android/app/build/
+# iOS (Flutter or native)
+.ios/
+ios/DerivedData/
+ios/Pods/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdatad/
+*.xcscmblueprint
+
+# ------------ Java / Kotlin / Gradle ------------
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle-cache/
+out/
+*.class
+
+# ------------ C/C++ / CMake ------------
+build/
+build-*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+compile_commands.json
+#.vscode/c_cpp_properties.json  # (optional)
+*.o
+*.obj
+*.so
+*.dll
+*.lib
+*.a
+*.la
+*.lo
+*.pdb
+*.exe
+
+# ------------ Android Studio specific ------------
+.cxx/
+captures/
+*.keystore
+*.jks
+*.keystore.properties
+
+# ------------ Web assets & bundles ------------
+*.map
+*.br
+*.gz
+
+# ------------ Images / Outputs (optional) ------------
+# Comment out if you DO want to track generated media
+outputs/
+export/
+artifacts/
+*.tmp
+*.temp
+
+# ------------ Databases / Local data ------------
+# SQLite / Lite DBs
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sdb
+*.mdb
+*.accdb
+*.laccdb
+*.ldb
+
+# Dumps/backups
+*.bak
+*.backup
+db_backups/
+# If you DO want SQL migrations/dumps tracked, keep them in a folder and unignore:
+#!migrations/**
+#!db/seed.sql
+
+# ------------ Microsoft Access specific ------------
+# (Don’t commit live Access files; commit only schema/scripts)
+*.accde
+*.accdr
+*.mdw
+
+# ------------ Containers / Docker ------------
+.docker/
+docker-data/
+# Keep Dockerfiles and compose files
+!Dockerfile
+!docker-compose*.yml
+!.dockerignore
+
+# ------------ Misc tools ------------
+coverage.xml
+test-results/
+reports/
+
+# ------------ Project-specific examples ------------
+# Keep templates/examples
+!docs/**
+!README.md
