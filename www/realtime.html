@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>AAI STT</title>
+<style>
+  body{font:14px/1.45 Segoe UI,Arial;margin:20px}
+  #log{white-space:pre-wrap;border:1px solid #ddd;padding:12px;border-radius:8px;max-height:40vh;overflow:auto}
+  .row{margin:.25rem 0}
+  button{padding:.5rem .8rem;border:1px solid #ccc;border-radius:8px;background:#f6f8fa;cursor:pointer}
+</style>
+
+<h2>Realtime STT</h2>
+<div class="row">
+  <button id="btnStart">Start</button>
+  <button id="btnStop">Stop</button>
+</div>
+<div id="log"></div>
+
+<script>
+const log = (m)=>{const el=document.getElementById('log'); el.textContent+=m+"\n"; el.scrollTop=el.scrollHeight;}
+let ws, audioCtx, source, workletNode, closing=false, cfg=null;
+
+const DEFAULT_CFG = {
+  apiKey: "",                         // set from VBA via PostMessage
+  model: "medical",                   // or "best"
+  sampleRate: 16000,
+  punctuate: true,
+  format_text: true,
+  interim_results: true,
+  word_boost: []                      // e.g. ["atrial fibrillation","metoprolol"]
+};
+
+// Receive config/messages from Access/C#
+chrome?.webview?.addEventListener('message', e=>{
+  try{
+    const msg = typeof e.data==="string" ? JSON.parse(e.data) : e.data;
+    if(msg?.type==="config"){ cfg = {...DEFAULT_CFG, ...msg.payload}; log("Config received"); }
+    if(msg?.type==="eval"){ eval(msg.js); }
+  }catch(err){ log("Host msg error: "+err); }
+});
+
+async function connect(){
+  if(!cfg || !cfg.apiKey){ log("Missing apiKey in config"); return; }
+
+  // mic
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount:1 }});
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)({ sampleRate: 48000 });
+  source = audioCtx.createMediaStreamSource(stream);
+  await audioCtx.audioWorklet.addModule(URL.createObjectURL(new Blob([`
+    class PCMWorklet extends AudioWorkletProcessor{
+      constructor(){ super(); this.buf=[]; this.outRate=16000; this.ratio=sampleRate/this.outRate; this.acc=0; }
+      process(inputs){ 
+        const input = inputs[0][0]; if(!input) return true;
+        for(let i=0;i<input.length;i++){ 
+          this.acc+=1; 
+          if(this.acc>=this.ratio){ this.acc-=this.ratio; 
+            // convert float [-1,1] to PCM16
+            let s = Math.max(-1, Math.min(1, input[i])); 
+            this.buf.push((s*0x7fff)|0);
+          }
+        }
+        if(this.buf.length>=this.outRate/10){ // ~100ms
+          const pcm = new Int16Array(this.buf); this.buf.length=0;
+          this.port.postMessage(pcm);
+        }
+        return true;
+      }
+    }
+    registerProcessor('pcm-worklet', PCMWorklet);
+  `], {type:'text/javascript'})));
+
+  workletNode = new AudioWorkletNode(audioCtx, 'pcm-worklet');
+  source.connect(workletNode).connect(audioCtx.destination);
+
+  // ws
+  const url = `wss://api.assemblyai.com/v2/realtime/ws?sample_rate=${cfg.sampleRate||16000}`;
+  ws = new WebSocket(url, []);
+  ws.onopen = () => {
+    log("WS open");
+    ws.send(JSON.stringify({
+      config: {
+        punctuate: !!cfg.punctuate, format_text: !!cfg.format_text,
+        interim_results: !!cfg.interim_results, word_boost: cfg.word_boost||[],
+        model: cfg.model||"best"
+      }
+    }));
+    workletNode.port.onmessage = (e)=>{
+      if(ws?.readyState===1){
+        const pcm16 = e.data;
+        // to base64
+        const chunk = btoa(String.fromCharCode(...new Uint8Array(pcm16.buffer)));
+        ws.send(JSON.stringify({audio_data: chunk}));
+      }
+    }
+  };
+  ws.onmessage = (m)=>{
+    const data = JSON.parse(m.data);
+    if(data.text){
+      const kind = data.message_type || (data.final ? "final" : "partial");
+      log(`[${kind}] ${data.text}`);
+      chrome?.webview?.postMessage(data.text || JSON.stringify({ type:"transcript", payload:data }));
+    }
+  };
+  ws.onerror = (e)=> log("WS error");
+  ws.onclose = (e)=> { log("WS closed"); if(!closing) setTimeout(()=>start(), 1200); };
+  // auth
+  ws.addEventListener('open',()=>{ ws.send(JSON.stringify({event:"auth", token: cfg.apiKey})); }, {once:true});
+}
+
+async function start(){ closing=false; try{ await connect(); } catch(err){ log("start error: "+err); } }
+function stop(){
+  closing=true;
+  try{ workletNode?.disconnect(); source?.disconnect(); audioCtx?.close(); }catch{}
+  try{ ws?.close(); }catch{}
+}
+
+document.getElementById('btnStart').onclick = ()=> start();
+document.getElementById('btnStop').onclick = ()=> stop();
+
+// Tell host we’re ready
+chrome?.webview?.postMessage(JSON.stringify({type:"ready"}));
+</script>
